@@ -1,5 +1,8 @@
 {
-  "dead": [],
+  "dead": [
+    "alexanderorlovofficial",
+    "alexanderorlovv"
+  ],
   "discovered": {
     "artemkey_new": {
       "niche": "найдено графом похожих",
@@ -99,7 +102,7 @@
     }
   },
   "misses": {
-    "alexanderorlovv": 1,
-    "alexanderorlovofficial": 1
+    "alexanderorlovv": 2,
+    "alexanderorlovofficial": 2
   }
 }
