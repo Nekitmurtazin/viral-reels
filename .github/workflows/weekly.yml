@@ -1,0 +1,80 @@
+name: Еженедельная подборка виральных Reels
+
+on:
+  schedule:
+    # понедельник 06:00 по Алматы = 01:00 UTC
+    - cron: "0 1 * * 1"
+  workflow_dispatch:
+    inputs:
+      expand:
+        description: "Развернуть граф похожих аккаунтов перед сбором"
+        type: boolean
+        default: false
+      discover:
+        description: "Поискать новые аккаунты по хэштегам"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: weekly-reels
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      # раз в месяц (первая неделя) обновляем состав watchlist
+      - name: Пополнение watchlist
+        if: github.event.inputs.expand == 'true' || github.event.inputs.discover == 'true'
+        env:
+          APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
+        run: |
+          if [ "${{ github.event.inputs.expand }}" = "true" ]; then python viral.py expand; fi
+          if [ "${{ github.event.inputs.discover }}" = "true" ]; then python viral.py discover; fi
+
+      - name: Сбор и отчёт
+        env:
+          APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
+        run: python viral.py run
+
+      - name: Сохранить историю метрик
+        run: |
+          git config user.name "reels-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add data/
+          git diff --staged --quiet || git commit -m "данные за $(date +%Y-%m-%d)"
+          git push
+
+      - name: Подготовить страницу
+        run: |
+          mkdir -p site
+          cp out/dashboard.html site/index.html
+          cp out/top.json site/top.json
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - id: deploy
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,70 @@
+{
+  "_comment": "Конфиг сборщика виральных Reels. watchlist — стартовая гипотеза, скрипт сам отбраковывает несуществующие аккаунты и дополняет список через hashtag discovery.",
+
+  "apify": {
+    "reel_actor": "apify~instagram-reel-scraper",
+    "hashtag_actor": "apify~instagram-hashtag-scraper",
+    "profile_actor": "apify~instagram-profile-scraper",
+    "reels_per_account": 12,
+    "timeout_secs": 900
+  },
+
+  "scoring": {
+    "min_views": 15000,
+    "min_post_age_hours": 36,
+    "max_post_age_days": 9,
+    "baseline_window": 25,
+    "baseline_min_posts": 5,
+    "top_n": 30,
+    "dedup_caption_similarity": 0.82
+  },
+
+  "expand": {
+    "seed_limit": 20,
+    "expand_per_level": 60,
+    "min_followers": 15000,
+    "keywords": [
+      "бизнес", "предприним", "маркетинг", "продаж", "стартап", "инвест",
+      "финанс", "деньг", "выручк", "прибыл", "масштаб", "founder", "фаундер",
+      "ceo", "основател", "компани", "недвижим", "трафик", "воронк",
+      "экономик", "налог", "юрист для бизнеса", "hr", "найм", "переговор"
+    ],
+    "stopwords": [
+      "18+", "эскорт", "похуден", "гадан", "таро", "магия", "приворот",
+      "казино", "ставки", "форекс сигнал", "пирамид"
+    ]
+  },
+
+  "discovery": {
+    "enabled": true,
+    "hashtags": [
+      "бизнес", "предприниматель", "маркетинг", "продажи",
+      "стартап", "инвестиции", "бизнесидеи", "своедело",
+      "бизнесказахстан", "бизнесалматы", "предпринимателиказахстана"
+    ],
+    "posts_per_hashtag": 40,
+    "min_followers_to_add": 20000,
+    "max_new_per_run": 15
+  },
+
+  "_watchlist_comment": "Seed из подписок владельца — реальные, проверенные аккаунты. Основной способ роста списка: python viral.py expand (граф похожих от самого Instagram).",
+
+  "watchlist": {
+    "предприниматели и founders": [
+      "margulan_seissembai", "portnyagin", "dashkiev", "ayazshabutdinov",
+      "sokolovskiy", "spiridonov_fm", "sharipov_ulugbek", "nurs_mag",
+      "justrasul", "kolmakov_dnk", "mishamed", "stas.egovtsev",
+      "kutergin", "ageres_official"
+    ],
+    "продажи и системный менеджмент": [
+      "katerina_ukolova", "grebenuk.m", "alexvisotsky",
+      "afanasyevnf", "radislavgandapas"
+    ],
+    "маркетинг": [
+      "rutarasenko", "pavelgitelman"
+    ],
+    "ниши и отрасли": [
+      "alexanderorlovv", "alexanderorlovofficial"
+    ]
+  }
+}

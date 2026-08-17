@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Виральные Reels · бизнес · {{ week_range }}</title>
+<style>
+  :root{
+    --bg:#0b0c0f; --panel:#141619; --panel-2:#1b1e23; --line:#252932;
+    --text:#e8eaed; --muted:#8b929e; --dim:#5f6673;
+    --accent:#e8b13a; --hot:#ff6b4a; --ok:#4ec98f;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--text);
+    font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1340px;margin:0 auto;padding:40px 28px 80px}
+
+  header{border-bottom:1px solid var(--line);padding-bottom:24px;margin-bottom:28px}
+  h1{font-size:26px;font-weight:650;letter-spacing:-.02em}
+  .sub{color:var(--muted);font-size:14px;margin-top:6px}
+
+  .stats{display:flex;gap:36px;flex-wrap:wrap;margin-top:22px}
+  .stat b{display:block;font-size:24px;font-weight:600;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+  .stat span{font-size:12px;color:var(--dim);text-transform:uppercase;letter-spacing:.06em}
+
+  .bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:24px}
+  .chip{
+    background:var(--panel);border:1px solid var(--line);color:var(--muted);
+    padding:7px 14px;border-radius:999px;font-size:13px;cursor:pointer;
+    transition:.15s;white-space:nowrap;
+  }
+  .chip:hover{border-color:#39404d;color:var(--text)}
+  .chip.on{background:var(--text);color:#0b0c0f;border-color:var(--text);font-weight:500}
+  .spacer{flex:1}
+  select{
+    background:var(--panel);border:1px solid var(--line);color:var(--text);
+    padding:7px 12px;border-radius:8px;font-size:13px;font-family:inherit;cursor:pointer;
+  }
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(205px,1fr));gap:16px}
+
+  .card{
+    background:var(--panel);border:1px solid var(--line);border-radius:14px;
+    overflow:hidden;display:flex;flex-direction:column;
+    transition:.18s;text-decoration:none;color:inherit;
+  }
+  .card:hover{transform:translateY(-3px);border-color:#39404d;box-shadow:0 12px 32px rgba(0,0,0,.5)}
+
+  .thumb{position:relative;aspect-ratio:9/16;background:var(--panel-2);overflow:hidden}
+  .thumb img{width:100%;height:100%;object-fit:cover;display:block}
+  .noimg{
+    display:flex;align-items:center;justify-content:center;height:100%;
+    color:var(--dim);font-size:12px;text-align:center;padding:16px;
+  }
+  .rank{
+    position:absolute;top:10px;left:10px;background:rgba(11,12,15,.82);
+    backdrop-filter:blur(6px);padding:3px 9px;border-radius:6px;
+    font-size:12px;font-weight:600;font-variant-numeric:tabular-nums;
+  }
+  .mult{
+    position:absolute;top:10px;right:10px;padding:4px 10px;border-radius:6px;
+    font-size:13px;font-weight:650;font-variant-numeric:tabular-nums;
+    background:rgba(11,12,15,.82);backdrop-filter:blur(6px);color:var(--accent);
+  }
+  .mult.hot{color:var(--hot)}
+  .views{
+    position:absolute;left:0;right:0;bottom:0;padding:26px 12px 10px;
+    background:linear-gradient(transparent,rgba(11,12,15,.94));
+    font-size:17px;font-weight:600;font-variant-numeric:tabular-nums;
+  }
+
+  .body{padding:12px 13px 14px;display:flex;flex-direction:column;gap:8px;flex:1}
+  .user{font-size:13px;font-weight:550;color:var(--text)}
+  .cap{
+    font-size:12.5px;line-height:1.45;color:var(--muted);
+    display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;
+  }
+  .meta{
+    display:flex;gap:10px;justify-content:space-between;margin-top:auto;padding-top:7px;
+    border-top:1px solid var(--line);font-size:11px;color:var(--dim);
+    font-variant-numeric:tabular-nums;white-space:nowrap;
+  }
+  .niche{font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.05em}
+  .repost{font-size:11px;color:var(--ok)}
+
+  footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);
+    color:var(--dim);font-size:12.5px;line-height:1.7}
+  .empty{color:var(--muted);padding:60px 0;text-align:center;grid-column:1/-1}
+  @media(max-width:640px){.wrap{padding:24px 16px 60px}.grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>Виральные Reels · бизнес</h1>
+  <div class="sub">Неделя {{ week_range }} · ранжирование по отклонению от нормы аккаунта, не по абсолютным просмотрам</div>
+  <div class="stats">
+    <div class="stat"><b>{{ posts|length }}</b><span>в подборке</span></div>
+    <div class="stat"><b>{{ fmt(stats.total_views) }}</b><span>суммарно просмотров</span></div>
+    <div class="stat"><b>{{ stats.median_outlier }}×</b><span>медианный выброс</span></div>
+    <div class="stat"><b>{{ stats.accounts_tracked }}</b><span>аккаунтов в мониторинге</span></div>
+  </div>
+</header>
+
+<div class="bar">
+  <button class="chip on" data-niche="all">Все</button>
+  {% for n in niches %}<button class="chip" data-niche="{{ n }}">{{ n }}</button>{% endfor %}
+  <div class="spacer"></div>
+  <select id="sort">
+    <option value="score">По значимости</option>
+    <option value="outlier">По кратности выброса</option>
+    <option value="views">По просмотрам</option>
+    <option value="er">По вовлечению</option>
+    <option value="fresh">По свежести</option>
+  </select>
+</div>
+
+<div class="grid" id="grid">
+{% for p in posts %}
+  <a class="card" href="{{ p.url }}" target="_blank" rel="noopener"
+     data-niche="{{ p.niche }}" data-score="{{ '%.4f'|format(p.score) }}"
+     data-outlier="{{ p.outlier }}" data-views="{{ p.views }}"
+     data-er="{{ p.er }}" data-age="{{ p.age_hours }}">
+    <div class="thumb">
+      {% if p.thumb_data %}<img src="{{ p.thumb_data }}" alt="" loading="lazy">
+      {% else %}<div class="noimg">превью недоступно<br>откройте в Instagram</div>{% endif %}
+      <div class="rank">{{ loop.index }}</div>
+      <div class="mult {% if p.outlier >= 5 %}hot{% endif %}">{{ p.outlier }}×</div>
+      <div class="views">{{ fmt(p.views) }}</div>
+    </div>
+    <div class="body">
+      <div class="niche">{{ p.niche }}</div>
+      <div class="user">@{{ p.username }}</div>
+      {% if p.caption %}<div class="cap">{{ p.caption }}</div>{% endif %}
+      {% if p.also_posted_by %}<div class="repost">тот же ролик ещё у {{ p.also_posted_by|length }} аккаунтов</div>{% endif %}
+      <div class="meta">
+        <span>норма {{ fmt(p.baseline|int) }}</span>
+        <span>ER {{ p.er }}%</span>
+        <span>{{ (p.age_hours/24)|round|int }} дн.</span>
+      </div>
+    </div>
+  </a>
+{% else %}
+  <div class="empty">За период нет роликов, прошедших пороги. Проверьте настройки в config.json.</div>
+{% endfor %}
+</div>
+
+<footer>
+  Собрано {{ generated }}. Выброс (×) = просмотры ролика ÷ медиана просмотров последних роликов того же аккаунта.
+  Показатель 3× значит, что ролик собрал втрое больше собственной нормы автора — это сигнал о сработавшем формате,
+  а не о размере аудитории. ER считается как (лайки + 3 × комментарии) ÷ просмотры.
+</footer>
+
+</div>
+
+<script>
+const grid = document.getElementById('grid');
+const cards = [...grid.querySelectorAll('.card')];
+let niche = 'all';
+
+function apply(){
+  const key = document.getElementById('sort').value;
+  const vis = cards.filter(c => niche === 'all' || c.dataset.niche === niche);
+  cards.forEach(c => c.style.display = 'none');
+  const dir = key === 'fresh' ? 1 : -1;
+  const val = c => key === 'fresh' ? +c.dataset.age : +c.dataset[key];
+  vis.sort((a,b) => (val(a) - val(b)) * dir);
+  vis.forEach((c,i) => {
+    c.style.display = '';
+    c.querySelector('.rank').textContent = i + 1;
+    grid.appendChild(c);
+  });
+}
+
+document.querySelectorAll('.chip').forEach(ch => ch.onclick = () => {
+  document.querySelectorAll('.chip').forEach(x => x.classList.remove('on'));
+  ch.classList.add('on');
+  niche = ch.dataset.niche;
+  apply();
+});
+document.getElementById('sort').onchange = apply;
+</script>
+</body>
+</html>
